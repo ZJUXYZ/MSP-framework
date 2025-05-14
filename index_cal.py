@@ -26,17 +26,6 @@ def std_c(pred, true, mask):
         std = torch.std(error)
     return std
 
-# def iqr_c(pred, true, mask):
-#     if mask is not None:
-#         error = pred - true
-#         q1 = torch.quantile(error[mask > 0], 0.25)
-#         q3 = torch.quantile(error[mask > 0], 0.75)
-#     else:
-#         q1 = torch.quantile(pred - true, 0.25)
-#         q3 = torch.quantile(pred - true, 0.75)
-#     iqr = q3 - q1
-#     return iqr
-
 def iqr_c(pred, true, mask):
     error = pred - true
     masked_errors_q1 = []
@@ -73,7 +62,7 @@ def r2_c(pred, true, mask):
         mask_sum = mask.sum(dim = 1, keepdim = True)
         mean_true = true.sum(dim = 1, keepdim = True) / mask_sum.clamp(min = 1e-6)
         ss_res = (error ** 2).sum(dim = 1)
-        ss_tot = (((true - mean_true) ** 2) * mask).sum(dim = 1)  # 计算每个样本的总方差
+        ss_tot = (((true - mean_true) ** 2) * mask).sum(dim = 1)
     else:
         mean_true = true.mean(dim = 1, keepdim = True)
         ss_res = (error ** 2).sum(dim = 1)
