@@ -43,9 +43,6 @@ class ChannelMLP(nn.Module):
         reshaped = False
         size = list(x.shape)
         if x.ndim > 3:  
-            # batch, channels, x1, x2... extra dims
-            # .reshape() is preferable but .view()
-            # cannot be called on non-contiguous tensors
             x = x.reshape((*size[:2], -1)) 
             reshaped = True
 
@@ -55,9 +52,7 @@ class ChannelMLP(nn.Module):
                 x = self.non_linearity(x)
             if self.dropout is not None:
                 x = self.dropout[i](x)
-
-        # if x was an N-d tensor reshaped into 1d, undo the reshaping
-        # same logic as above: .reshape() handles contiguous tensors as well
+                
         if reshaped:
             x = x.reshape((size[0], self.out_channels, *size[2:]))
 
