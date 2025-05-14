@@ -19,26 +19,6 @@ def skip_connection(
     elif skip_type.lower() == "identity":
         return nn.Identity()
 
-
-# class SoftGating(nn.Module):
-
-#     def __init__(self, in_features, out_features = None, n_dim = 1, bias = False):
-#         super().__init__()
-#         self.in_features = in_features
-#         self.out_features = out_features
-#         self.weight = nn.Parameter(torch.ones(1, self.in_features, *(1,) * n_dim))
-#         if bias:
-#             self.bias = nn.Parameter(torch.ones(1, self.in_features, *(1,) * n_dim))
-#         else:
-#             self.bias = None
-
-#     def forward(self, x):
-
-#         if self.bias is not None:
-#             return self.weight * x + self.bias
-#         else:
-#             return self.weight * x
-        
 class SoftGating1(nn.Module):
     def __init__(self, in_features, out_features = None, n_dim = 1, bias = False):
         super().__init__()
@@ -66,54 +46,10 @@ class Flattened1dConv(nn.Module):
                               kernel_size = kernel_size,
                               bias = bias)
     def forward(self, x):
-        # x.shape: b, c, x1, ..., xn x_ndim > 1
         size = list(x.shape)
-        # flatten everything past 1st data dim
         x = x.view(*size[:2], -1)
         x = self.conv(x)
-        # reshape x into an Nd tensor b, c, x1, x2, ...
         x = x.view(size[0], self.conv.out_channels, *size[2:])
         return x
-
-class Flattened1dConv1(nn.Module):
-    def __init__(self, in_channels: int, out_channels: int, kernel_size, bias=False):
-
-        super().__init__()
-        self.conv = nn.Conv1d(in_channels = in_channels,
-                              out_channels = out_channels,
-                              kernel_size = kernel_size,
-                              bias = bias)
-        
-        self.gap = nn.AdaptiveAvgPool1d(1)
-        self.context_mlp = nn.Sequential(
-            nn.Linear(out_channels, out_channels // 4),
-            nn.ReLU(),
-            nn.Linear(out_channels // 4, out_channels),
-            nn.Sigmoid(),
-        )
-    def forward(self, x):
-        x_skip = self.conv(x)
-        x_gap = self.gap(x_skip).squeeze(-1)
-        context = self.context_mlp(x_gap).unsqueeze(-1)
-        x_skip = x_skip * context
-        return x_skip
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
