@@ -75,7 +75,7 @@ class FNOBlocks(nn.Module):
             ]
         )
         
-        self.fno_skips = nn.ModuleList( # 1维卷积
+        self.fno_skips = nn.ModuleList(
             [
                 skip_connection(
                     self.in_channels,
@@ -87,7 +87,7 @@ class FNOBlocks(nn.Module):
             ]
         )
 
-        self.channel_mlp_skips = nn.ModuleList( # 直接乘积
+        self.channel_mlp_skips = nn.ModuleList(
             [
                 skip_connection(
                     self.in_channels,
